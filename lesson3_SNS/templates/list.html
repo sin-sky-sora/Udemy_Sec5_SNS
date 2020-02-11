@@ -13,10 +13,10 @@
     <div class="container">
         {% for item in object_list %}
         <div class="alert alert-success" role="alert">
-            <p>タイトル：{{ item.title }}</p>
+            <p>タイトル：<a href="{% url 'detail' item.pk %}">{{ item.title }}</a></p>
             <p>投稿者；{{item.author }}</p>
-            <a href="#" class="btn btn-primary" role="button" aria-pressed="true">いいね</a>
-            <a href="#" class="btn btn-success" role="button" aria-pressed="true">既読</a>
+            <a href="{% url 'good' item.pk %}" class="btn btn-primary" role="button" aria-pressed="true">いいね：{{ item.good }}人</a>
+            <a href="{% url 'read' item.pk %}" class="btn btn-success" role="button" aria-pressed="true">既読：{{ item.read }}人</a>
         </div>
         {% endfor %}
         <a href={% url 'logout' %} class="btn btn-outline-warning">ログアウト</a>

@@ -3,6 +3,8 @@ from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from .models import BoardModel
 from django.contrib.auth.decorators import login_required
+from django.views.generic import CreateView
+from django.urls import reverse_lazy
 
 # Create your views here.
 #ユーザー登録
@@ -31,7 +33,7 @@ def loginfunc(request):
             #return render(request,'signup.html',{'error':"ログインできました"})
             return redirect('list')
         else:
-            return redirect('login')
+            return render(request,'login.html',{'error':'ユーザー名とパスワードが一致しません'})
     return render(request,'login.html')
 
 #サインアウトしていた時にlistにアクセスしたらloginにアクセスする
@@ -44,3 +46,30 @@ def listfunc(request):
 def logoutfunc(request):
     logout(request)
     return redirect('login')
+
+def detailfunc(request,pk):
+    object = BoardModel.objects.get(pk=pk)
+    return render(request,'detail.html',{'object':object})
+
+def goodfunc(request,pk):
+    post = BoardModel.objects.get(pk=pk)
+    post.good += 1
+    post.save()
+    return redirect('list')
+
+def readfunc(request,pk):
+    post = BoardModel.objects.get(pk=pk)
+    post2 = request.user.get_username()
+    if post2 in post.readtext:
+        redirect('list')
+    else:
+        post.read += 1
+        post.readtext = post.readtext + ' ' + post2
+        post.save()
+    return redirect('list')
+
+class BoardCreate(CreateView):
+    template_name = 'create.html'
+    model = BoardModel
+    fields = ('title','content','author','images')
+    success_url = reverse_lazy('list')
